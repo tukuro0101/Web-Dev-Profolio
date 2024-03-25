@@ -1,3 +1,4 @@
+<?php include 'authenticate.php'; ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +12,7 @@
     <div class="page_container">
         <header> <?php include 'nav.php';?>  </header>
         <footer></footer>
-        <p>asd</p>
+        <p>Info to be updated </p>
     </div>
 
     <?php include 'contact.php';?>

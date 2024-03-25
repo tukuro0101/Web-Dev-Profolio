@@ -1,5 +1,4 @@
 <?php
-session_start();
 include 'connection.php'; // Make sure this file exists and contains the PDO connection
 
 function redirect_to_login() {
@@ -10,12 +9,11 @@ function redirect_to_login() {
 // Sign Up
 if (isset($_POST['signup'])) {
     $new_username = $_POST['new_username'];
-    // If you don't want hashed passwords, simply remove the password_hash function
-    $new_password = $_POST['new_password']; 
+    $new_password = password_hash($_POST['new_password'], PASSWORD_DEFAULT); // Hashing the password
     $type = 'normal'; // Default user type to normal
 
-    // The column names should not be in single quotes
-    $stmt = $pdo->prepare("INSERT INTO user (Username, Password, Type) VALUES (?, ?, ?)");
+    // Correcting the column names as per your database structure
+    $stmt = $pdo->prepare("INSERT INTO users (username, password, type) VALUES (?, ?, ?)");
     if ($stmt->execute([$new_username, $new_password, $type])) {
         echo "Signup successful!";
         $_SESSION['user_type'] = $type;
@@ -31,21 +29,24 @@ if (isset($_POST['login'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // Since you're not using hashed passwords, change this to a direct comparison
-    $stmt = $pdo->prepare("SELECT * FROM user WHERE Username = ?");
+    // Using prepared statements to prevent SQL injection
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
     $stmt->execute([$username]);
     $user = $stmt->fetch();
 
-    if ($user && $user['Password'] === $password) {
-        $_SESSION['user_id'] = $user['User_ID'];
-        $_SESSION['user_type'] = $user['Type'];
-        $_SESSION['username'] = $user['Username'];
+    // Verify the password against the hashed password in the database
+    if ($user && password_verify($password, $user['password'])) {
+        $_SESSION['user_id'] = $user['user_id'];
+        $_SESSION['user_type'] = $user['type'];
+        $_SESSION['username'] = $user['username'];
 
-        if (strtolower($user['Type']) === 'admin') {
+        // Redirect based on user type
+        if (strtolower($user['type']) == 'admin') {
             header('Location: admin_panel.php');
             exit;
         } else {
-            header('Location: main.php');
+            header('Location: main.php'); // Assuming there's a user_panel.php for normal users
+            exit;
         }
     } else {
         echo "Login failed!";
@@ -57,6 +58,6 @@ if (isset($_GET['logout'])) {
     session_unset();
     session_destroy();
     header("Location: index.php");
-exit();
+    exit();
 }
 ?>

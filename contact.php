@@ -83,20 +83,15 @@
 <div class="footer">
     <div class="footer-container">
         <div class="footer-section">
-            <h3>Shop Matcha</h3>
+            <h3>Nice content</h3>
             <ul>
-                <li><a href="#">Just the Matcha</a></li>
-                <li><a href="#">The Trial Kit</a></li>
-                <li><a href="#">Wholesale & Bulk</a></li>
-                <li><a href="#">Teaware</a></li>
+                <li><a href="#">This is random</a></li>
             </ul>
         </div>
         <div class="footer-section">
-            <h3>Learn</h3>
+            <h3>Huh?</h3>
             <ul>
-                <li><a href="#">Matcha Recipes</a></li>
-                <li><a href="#">Caffeine Content</a></li>
-                <li><a href="#">Health Benefits</a></li>
+                <li><a href="#">I should put something here</a></li>
             </ul>
         </div>
 
@@ -115,6 +110,6 @@
         </div>
     </div>
     <div class="footer-bottom">
-        <p>&copy; <?= date("Y") ?> Tran Minh Tu's Website.I don't any photos that are displayed in the webiste.</p>
+        <p>&copy; <?= date("Y") ?> Tran Minh Tu's Website.I don't owned any photos that are displayed in the webiste.</p>
     </div>
 </div>

@@ -74,6 +74,7 @@
                     <div class="product">
                         <h2><b><?= htmlspecialchars($product['name']) ?></b></h2>
                         <h1>$<?= htmlspecialchars($product['price']) ?></h1>
+                        <h5>Character : <?= htmlspecialchars($product['character']) ?></h5>
                         <!-- Make the product image clickable -->
                         <a href="product_view.php?id=<?= $product['figure_id'] ?>">
                             <img src="<?= htmlspecialchars($product['image_url']) ?>" alt="Image of <?= htmlspecialchars($product['name']) ?>" width="300" height="300">

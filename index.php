@@ -2,7 +2,7 @@
 require 'connection.php';
 
 // Fetch the 5 most recent products
-$stmt = $pdo->query("SELECT * FROM anime_figures ORDER BY date_added DESC LIMIT 5");
+$stmt = $pdo->query("SELECT * FROM anime_figures ORDER BY date_added DESC LIMIT 8");
 $recent_products = $stmt->fetchAll();
 ?>
 
@@ -52,7 +52,7 @@ $recent_products = $stmt->fetchAll();
                 slideIndex++;
                 if (slideIndex > slides.length) {slideIndex = 1}    
                 slides[slideIndex-1].style.display = "block";  
-                slideTimer = setTimeout(showSlides, 3000); // Change slide every 3 seconds
+                slideTimer = setTimeout(showSlides, 1000); // Change slide every 3 seconds
             }
 
             showSlides();

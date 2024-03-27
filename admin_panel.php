@@ -35,7 +35,7 @@ if (isset($_GET['edit_product_id'])) {
     $stmt = $pdo->prepare("SELECT * FROM Anime_Figures WHERE figure_id = ?");
     $stmt->execute([$editProductId]);
     $productToEdit = $stmt->fetch(PDO::FETCH_ASSOC);
-}       
+}
 
 
 ?>
@@ -45,7 +45,6 @@ if (isset($_GET['edit_product_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <?php include 'style.php'; ?>
     <title>Admin Panel</title>
 </head>
 <body>

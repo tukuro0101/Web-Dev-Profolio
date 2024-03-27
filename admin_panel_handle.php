@@ -81,6 +81,7 @@ if (isset($_GET['edit'])) {
     $productToEdit = $editStmt->fetch();
 }
 
+
 // Handle product update and deletion
 if (isset($_POST['update_product'])) {
     $id = $_POST['id'];

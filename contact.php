@@ -1,4 +1,6 @@
 
+<?php include 'style.php'; ?>
+
 <style>
         .footer {
             background-color: #333; /* Assuming this matches the nav color */

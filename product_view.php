@@ -67,7 +67,6 @@ if (isset($_POST['submit_review'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css"> <!-- Example stylesheet -->
     <title><?= htmlspecialchars($product['name']) ?></title>
 </head>
 <body>
@@ -143,7 +142,6 @@ if (isset($_POST['submit_review'])) {
 </body>
 <style>
     .page_container {
-        width: 80%;
         margin: 0 auto;
     }
 

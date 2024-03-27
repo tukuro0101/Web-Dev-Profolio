@@ -55,6 +55,18 @@
                     <input type="hidden" name="category" value="<?= htmlspecialchars($_GET['category']) ?>">
                 <?php endif; ?>
             </form>
+<!-- Product Count Adjustment Form -->
+<?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin'): ?>
+    <form id="productCountForm" action="" method="get">
+        <label for="productCount">Product Count:</label>
+        <input type="number" id="productCount" name="productCount" min="1" value="<?= $productsPerPage ?>">
+        <button type="submit">Update</button>
+        <!-- Hidden input to store the product count for pagination -->
+        <input type="hidden" name="prevProductCount" value="<?= $productsPerPage ?>">
+    </form>
+<?php endif; ?>
+
+
 
             <!-- Product Listing Section -->
             <section class="product-listing">
@@ -80,15 +92,15 @@
     <?php if ($totalProducts > $productsPerPage): ?>
         <?php if ($totalPages > 1): ?>
             <?php if ($page > 1): ?>
-                <a href="?page=<?= $page - 1 ?>&<?php if ($categoryFilter) echo 'category=' . urlencode($categoryFilter) ?>&<?php if ($sortOption) echo 'sort=' . $sortOption ?>&<?php if ($searchQuery) echo 'searchQuery=' . urlencode($searchQuery) ?>">Previous</a>
+                <a href="?page=<?= $page - 1 ?>&productCount=<?= $productsPerPage ?>&<?php if ($categoryFilter) echo 'category=' . urlencode($categoryFilter) ?>&<?php if ($sortOption) echo 'sort=' . $sortOption ?>&<?php if ($searchQuery) echo 'searchQuery=' . urlencode($searchQuery) ?>">Previous</a>
             <?php endif; ?>
 
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <a href="?page=<?= $i ?>&<?php if ($categoryFilter) echo 'category=' . urlencode($categoryFilter) ?>&<?php if ($sortOption) echo 'sort=' . $sortOption ?>&<?php if ($searchQuery) echo 'searchQuery=' . urlencode($searchQuery) ?>" <?= ($page == $i) ? 'class="active"' : '' ?>><?= $i ?></a>
+                <a href="?page=<?= $i ?>&productCount=<?= $productsPerPage ?>&<?php if ($categoryFilter) echo 'category=' . urlencode($categoryFilter) ?>&<?php if ($sortOption) echo 'sort=' . $sortOption ?>&<?php if ($searchQuery) echo 'searchQuery=' . urlencode($searchQuery) ?>" <?= ($page == $i) ? 'class="active"' : '' ?>><?= $i ?></a>
             <?php endfor; ?>
 
             <?php if ($page < $totalPages): ?>
-                <a href="?page=<?= $page + 1 ?>&<?php if ($categoryFilter) echo 'category=' . urlencode($categoryFilter) ?>&<?php if ($sortOption) echo 'sort=' . $sortOption ?>&<?php if ($searchQuery) echo 'searchQuery=' . urlencode($searchQuery) ?>">Next</a>
+                <a href="?page=<?= $page + 1 ?>&productCount=<?= $productsPerPage ?>&<?php if ($categoryFilter) echo 'category=' . urlencode($categoryFilter) ?>&<?php if ($sortOption) echo 'sort=' . $sortOption ?>&<?php if ($searchQuery) echo 'searchQuery=' . urlencode($searchQuery) ?>">Next</a>
             <?php endif; ?>
         <?php endif; ?>
     <?php elseif ($totalProducts == 0): ?>
@@ -96,6 +108,7 @@
         <span>No products found</span>
     <?php endif; ?>
 </div>
+
 
         </main>
 

@@ -113,6 +113,7 @@ if (isset($_POST['submit_review'])) {
             <strong><?= htmlspecialchars($reviewerName) ?></strong>
             <p>Rating: <?= htmlspecialchars($review['rating']) ?>/5</p>
             <p><?= htmlspecialchars($review['comment']) ?></p>
+            <p><?= htmlspecialchars(date('F d,Y',strtotime($review['date_commented']))) ?></p>
              <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin'): ?>
                 <form action="review_handle.php" method="post">
                                 <input type="hidden" name="review_id" value="<?= $review['review_id'] ?>">

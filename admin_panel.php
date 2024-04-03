@@ -49,7 +49,7 @@ if (isset($_GET['edit_product_id'])) {
     <div class="page_container">
         <header><?php include 'nav.php'; ?></header>
         <main>
-            <h1>Admin Panel</h1>
+        <h1>Admin Panel</h1>
             <section class="product-management">
                 <h2>Insert New Product</h2>
                 <form action="admin_panel_handle.php" method="post" enctype="multipart/form-data">
@@ -64,23 +64,22 @@ if (isset($_GET['edit_product_id'])) {
                     <input type="text" name="character" placeholder="Character" required>
                     <input type="number" step="0.01" name="price" placeholder="Price" required>
                     <textarea name="description" placeholder="Description" required></textarea>
-                   <!-- Image upload or URL input -->
-<div id="imageUploadOptionsInsert">
-    <label for="imageFile">Upload Image File:</label>
-    <input type="file" name="imageFile" id="imageFileInsert" accept="image/png, image/jpeg, image/gif">
-</div>
-<div id="imageUrlInputInsert" style="display: none;">
-    <label for="imageUrl">Image URL:</label>
-    <input type="text" name="imageUrl" id="imageUrlInsert">
-</div>
+                    <!-- Image upload or URL input -->
+                    <div id="imageUploadOptionsInsert">
+                        <label for="imageFile">Upload Image File:</label>
+                        <input type="file" name="imageFile" id="imageFileInsert" accept="image/png, image/jpeg, image/gif">
+                    </div>
+                    <div id="imageUrlInputInsert">
+                        <label for="imageUrl">Image URL:</label>
+                        <input type="text" name="imageUrl" id="imageUrlInsert">
+                    </div>
 
-<!-- Button for toggling between upload and URL input -->
-<button type="button" id="toggleImageInputInsert">Toggle Image Input</button>
+                    <!-- Button for toggling between upload and URL input -->
+                    <button type="button" id="toggleImageInputInsert">Toggle Image Input</button>
 
-
-    <!-- Submit button -->
-    <button type="submit" name="insert_product">Insert Product</button>
-</form>
+                    <!-- Submit button -->
+                    <button type="submit" name="insert_product">Insert Product</button>
+                </form>
             </section>
             <?php if (isset($productToEdit)): ?>
                 <section class="update-delete-product">
@@ -106,24 +105,23 @@ if (isset($_GET['edit_product_id'])) {
                         <input type="text" name="character" placeholder="Character" required value="<?= htmlspecialchars($productToEdit['character']) ?>">
                         <input type="number" step="0.01" name="price" placeholder="Price" required value="<?= htmlspecialchars($productToEdit['price']) ?>">
                         <textarea name="description" placeholder="Description" required><?= htmlspecialchars($productToEdit['description']) ?></textarea>
-<!-- Image upload or URL input -->
-<div id="imageUploadOptionsUpdate">
-    <label for="imageFileUpdate">Upload New Image File:</label>
-    <input type="file" name="imageFile" id="imageFileUpdate" accept="image/png, image/jpeg, image/gif">
-</div>
-<div id="imageUrlInputUpdate" style="display: none;">
-    <label for="imageUrlUpdate">Image URL:</label>
-    <input type="text" name="imageUrlUpdate" id="imageUrlUpdate">
-</div>
+                        <!-- Image upload or URL input -->
+                        <div id="imageUploadOptionsUpdate">
+                            <label for="imageFileUpdate">Upload New Image File:</label>
+                            <input type="file" name="imageFile" id="imageFileUpdate" accept="image/png, image/jpeg, image/gif">
+                        </div>
+                        <div id="imageUrlInputUpdate">
+                            <label for="imageUrlUpdate">Image URL:</label>
+                            <input type="text" name="imageUrlUpdate" id="imageUrlUpdate">
+                        </div>
 
-<!-- Button for toggling between upload and URL input -->
-<button type="button" id="toggleImageInputUpdate">Toggle Image Input</button>
+                        <!-- Button for toggling between upload and URL input -->
+                        <button type="button" id="toggleImageInputUpdate">Toggle Image Input</button>
 
-
-    <!-- Submit buttons -->
-    <button type="submit" name="update_product">Update Product</button>
-    <button type="submit" name="delete_product">Delete Product</button>
-</form>
+                        <!-- Submit buttons -->
+                        <button type="submit" name="update_product">Update Product</button>
+                        <button type="submit" name="delete_product">Delete Product</button>
+                    </form>
                 </section>
             <?php endif; ?>
             <section class="category-management">

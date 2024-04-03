@@ -1,5 +1,5 @@
 
-<?php include 'style.php'; ?>
+
 
 <style>
         .footer {

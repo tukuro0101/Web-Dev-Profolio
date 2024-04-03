@@ -23,7 +23,8 @@ $categoryStmt->execute([$product['category_id']]);
 $categoryName = $categoryStmt->fetchColumn();
 
 // Fetch the reviews for the product in reverse chronological order
-$reviewsStmt = $pdo->prepare("SELECT r.rating, r.comment, r.review_id, r.status, u.username, r.date_commented 
+$reviewsStmt = $pdo->prepare("SELECT r.rating, r.comment, r.review_id, r.status, r.reviewer_type, r.date_commented, 
+                                    r.guest_name, u.username
                               FROM reviews r 
                               LEFT JOIN users u ON r.user_id = u.user_id 
                               WHERE r.figure_id = ?
@@ -31,7 +32,8 @@ $reviewsStmt = $pdo->prepare("SELECT r.rating, r.comment, r.review_id, r.status,
 $reviewsStmt->execute([$_GET['id']]);
 $reviews = $reviewsStmt->fetchAll();
 
-// Handle review submission
+
+// Review Submission Logic
 if (isset($_POST['submit_review'])) {
     // Validate comment data
     $rating = $_POST['rating'];
@@ -40,21 +42,31 @@ if (isset($_POST['submit_review'])) {
     if (isset($_SESSION['user_id'])) {
         // User is logged in, use their user_id
         $userId = $_SESSION['user_id'];
+        $reviewerType = 'registered';
     } else {
-        // User is not logged in, use guest name as username
-        $username = $_POST['guest_name'];
+        // User is not logged in, determine reviewer type and name
+        if (!empty($_POST['guest_name'])) {
+            // If guest name provided, use it as the reviewer name
+            $guestName = $_POST['guest_name'];
+            $reviewerType = 'guest';
+        } else {
+            // If guest name not provided, mark as anonymous
+            $guestName = 'Anonymous';
+            $reviewerType = 'anonymous';
+        }
 
-        // Insert guest user into database and get their user_id
-        $insertGuestStmt = $pdo->prepare("INSERT INTO users (username, type) VALUES (?, 'guest')");
-        $insertGuestStmt->execute([$username]);
+        // Insert the review with guest name
+        $insertReviewStmt = $pdo->prepare("INSERT INTO reviews (figure_id, rating, comment, date_commented, reviewer_type, guest_name) VALUES (?, ?, ?, NOW(), ?, ?)");
+        $insertReviewStmt->execute([$_GET['id'], $rating, $comment, $reviewerType, $guestName]);
 
-        // Retrieve the generated user_id
-        $userId = $pdo->lastInsertId();
+        // Redirect to avoid resubmission on refresh
+        header("Location: product_view.php?id={$_GET['id']}");
+        exit;
     }
 
-    // Insert the review into the database
-    $insertReviewStmt = $pdo->prepare("INSERT INTO reviews (figure_id, user_id, rating, comment, date_commented) VALUES (?, ?, ?, ?, NOW())");
-    $insertReviewStmt->execute([$_GET['id'], $userId, $rating, $comment]);
+    // Insert the review for registered users
+    $insertReviewStmt = $pdo->prepare("INSERT INTO reviews (figure_id, user_id, rating, comment, date_commented, reviewer_type) VALUES (?, ?, ?, ?, NOW(), ?)");
+    $insertReviewStmt->execute([$_GET['id'], $userId, $rating, $comment, $reviewerType]);
 
     // Redirect to avoid resubmission on refresh
     header("Location: product_view.php?id={$_GET['id']}");
@@ -62,7 +74,7 @@ if (isset($_POST['submit_review'])) {
 }
 ?>
 
-<!DOCTYPE html>     
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -85,25 +97,37 @@ if (isset($_POST['submit_review'])) {
             <section class="reviews">
                 <h2>Reviews</h2>
                 <div class="reviews-container">
-                    <?php foreach ($reviews as $review): ?>
-                        <?php if ($review['status'] === 'visible' || (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin')): ?>
-                            <div class="review" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
-                                <strong><?= htmlspecialchars($review['username'] ?: 'Anonymous') ?></strong>
-                                <p>Rating: <?= htmlspecialchars($review['rating']) ?>/5</p>
-                                <p><?= htmlspecialchars($review['comment']) ?></p>
-                                <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin'): ?>
-                                    <form action="product_view.php?id=<?= $_GET['id'] ?>" method="post">
-                                        <input type="hidden" name="review_id" value="<?= $review['review_id'] ?>">
-                                        <?php if ($review['status'] === 'visible'): ?>
-                                            <button type="submit" name="hide_review">Hide</button>
-                                        <?php else: ?>
-                                            <button type="submit" name="unhide_review">Unhide</button>
-                                        <?php endif; ?>
-                                    </form>
+                <?php foreach ($reviews as $review): ?>
+                    <?php if ($review['status'] === 'visible' || (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin')): ?>
+        <div class="review" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+            <?php
+                $reviewerName = 'Anonymous'; // Default to anonymous
+                if ($review['reviewer_type'] === 'registered' && !empty($review['username'])) {
+                    // If registered and username is not empty, display username
+                    $reviewerName = $review['username'];
+                } elseif ($review['reviewer_type'] === 'guest') {
+                    // If guest, display guest_name or 'Anonymous' if guest_name is empty
+                    $reviewerName = !empty($review['guest_name']) ? $review['guest_name'] : 'Anonymous';
+                }
+            ?>
+            <strong><?= htmlspecialchars($reviewerName) ?></strong>
+            <p>Rating: <?= htmlspecialchars($review['rating']) ?>/5</p>
+            <p><?= htmlspecialchars($review['comment']) ?></p>
+             <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin'): ?>
+                <form action="review_handle.php" method="post">
+                                <input type="hidden" name="review_id" value="<?= $review['review_id'] ?>">
+                                <input type="hidden" name="figure_id" value="<?= $_GET['id'] ?>"> <!-- Include figure_id for redirection -->
+                                <?php if ($review['status'] === 'visible'): ?>
+                                    <button type="submit" name="hide_review">Hide</button>
+                                <?php else: ?>
+                                    <button type="submit" name="unhide_review">Unhide</button>
                                 <?php endif; ?>
-                            </div>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
+                                <button type="submit" name="delete_review">Delete</button>
+                            </form>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+<?php endforeach; ?>
                 </div>
             </section>
             <section class="comment-form">
@@ -111,7 +135,7 @@ if (isset($_POST['submit_review'])) {
                 <form action="product_view.php?id=<?= $_GET['id'] ?>" method="post">
                     <?php if (!isset($_SESSION['user_id'])): ?>
                         <label for="guest_name">Your Name:</label>
-                        <input type="text" name="guest_name" id="guest_name" required>
+                        <input type="text" name="guest_name" id="guest_name">
                     <?php endif; ?>
                     <label for="rating">Rating:</label>
                     <select name="rating" id="rating" required>

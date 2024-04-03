@@ -20,7 +20,7 @@ if (isset($results['error'])) {
     </div>
     <div class="nav_search_container">
         <form action="main.php" method="GET" id="searchForm">
-            <input type="text" placeholder="Search.." name="searchQuery" id="searchInput" autocomplete="off" required>
+        <input type="text" placeholder="Search.." name="searchQuery" id="searchInput" autocomplete="off" required value="<?php echo isset($_GET['searchQuery']) ? htmlspecialchars($_GET['searchQuery']) : ''; ?>">
             <div id="autocompleteList" class="autocomplete-items"></div>
             <button type="submit">Search</button>
         </form>
@@ -44,20 +44,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const autocompleteList = document.getElementById('autocompleteList');
 
     searchForm.addEventListener('submit', function(event) {
-        // Prevent the default form submission
-        event.preventDefault();
+    // Prevent the default form submission
+    event.preventDefault();
 
-        const searchTerm = searchInput.value.trim();
+    const searchTerm = searchInput.value.trim();
 
-        if (!searchTerm) {
-            return;
-        }
+    if (!searchTerm) {
+        return;
+    }
 
-        // Encode the search term to ensure spaces and special characters are handled correctly
-        const encodedSearchTerm = encodeURIComponent(searchTerm);
+    // Encode the search term to ensure spaces and special characters are handled correctly
+    const encodedSearchTerm = encodeURIComponent(searchTerm);
 
-        // Redirect to main.php with the search query parameter
-        window.location.href = `main.php?searchQuery=${encodedSearchTerm}`;
+    // Redirect to main.php with the search query parameter
+    window.location.href = `main.php?searchQuery=${encodedSearchTerm}`;
     });
 });
 </script>

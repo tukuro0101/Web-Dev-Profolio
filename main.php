@@ -65,8 +65,12 @@
         <input type="hidden" name="prevProductCount" value="<?= $productsPerPage ?>">
     </form>
 <?php endif; ?>
-
-
+<div class="search-info">
+    <?php if (isset($_GET['searchQuery'])): ?>
+        <?php $searchTerm = htmlspecialchars($_GET['searchQuery']); ?>
+        <p>1 - <?= min($totalProducts, $productsPerPage) ?> of <?= $totalProducts ?> results for '<?php echo $searchTerm ?>'</p>
+    <?php endif; ?>
+</div>
 
             <!-- Product Listing Section -->
             <section class="product-listing">
@@ -75,6 +79,7 @@
                         <h2><b><?= htmlspecialchars($product['name']) ?></b></h2>
                         <h1>$<?= htmlspecialchars($product['price']) ?></h1>
                         <h5>Character : <?= htmlspecialchars($product['character']) ?></h5>
+                        <h5>Added : <?= htmlspecialchars($product['date_added']) ?></h5>
                         <!-- Make the product image clickable -->
                         <a href="product_view.php?id=<?= $product['figure_id'] ?>">
                             <img src="<?= htmlspecialchars($product['image_url']) ?>" alt="Image of <?= htmlspecialchars($product['name']) ?>" width="300" height="300">
@@ -104,9 +109,6 @@
                 <a href="?page=<?= $page + 1 ?>&productCount=<?= $productsPerPage ?>&<?php if ($categoryFilter) echo 'category=' . urlencode($categoryFilter) ?>&<?php if ($sortOption) echo 'sort=' . $sortOption ?>&<?php if ($searchQuery) echo 'searchQuery=' . urlencode($searchQuery) ?>">Next</a>
             <?php endif; ?>
         <?php endif; ?>
-    <?php elseif ($totalProducts == 0): ?>
-        <!-- No products found -->
-        <span>No products found</span>
     <?php endif; ?>
 </div>
 

@@ -118,6 +118,12 @@ if (isset($_GET['edit_product_id'])) {
                         <!-- Button for toggling between upload and URL input -->
                         <button type="button" id="toggleImageInputUpdate">Toggle Image Input</button>
 
+                         <!-- Select button to remove image -->
+                         <?php if ($productToEdit['image_url']): ?>
+                            <input type="checkbox" name="delete_image" id="delete_image">
+                            <label for="delete_image">Delete Image</label>
+                        <?php endif; ?>
+
                         <!-- Submit buttons -->
                         <button type="submit" name="update_product">Update Product</button>
                         <button type="submit" name="delete_product">Delete Product</button>
@@ -218,6 +224,44 @@ if (isset($_GET['edit_product_id'])) {
             imageUrlInputUpdate.style.display = "block";
         }
     });
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Add event listener to handle remove image button clicks
+    const removeImageButtons = document.querySelectorAll('.remove-image-btn');
+    removeImageButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
+            removeImage(productId);
+        });
+    });
+
+    // Update the JavaScript function to handle remove image request with product ID
+    function removeImage(productId) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'admin_panel_handle.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                // Image removed successfully, update UI as needed
+                console.log(xhr.responseText);
+                // You may need to reload the page or update the UI here
+            } else {
+                // Error handling
+                console.error('Error removing image:', xhr.responseText);
+            }
+        }
+    };
+
+    // Get the remove image checkbox state
+    const removeImageCheckbox = document.getElementById('delete_image');
+    const removeImageChecked = removeImageCheckbox.checked ? 1 : 0; // Convert boolean to 1 or 0
+
+    // Send request with product ID and remove image flag
+    xhr.send(`remove_image=1&product_id=${productId}&remove_image_checked=${removeImageChecked}`);
+}
+
 });
 
 </script>

@@ -104,7 +104,7 @@ $stmt->execute([$name, $category_id, $character, $price, $description, $imageURL
 
 function resize_image($file, $target_file) {
     list($width, $height, $type) = getimagesize($file);
-    $new_width = $new_height = 300;
+    $new_width = $new_height = 300;  //300px x 300px
 
     if ($width > $height) {
         $new_height = ($new_width / $width) * $height;
@@ -162,17 +162,17 @@ function resize_image($file, $target_file) {
     
             // Resize the image
             if (resize_image($_FILES['imageFile']['tmp_name'], $resizedFilePath)) {
-                return $resizedFileName; // Return the new filename if the resize was successful
+                return $resizedFileName; // Return the new filename
             } else {
                 echo "Error resizing file.";
                 return null;
             }
         }
     
-        return null; // Return null if no file was uploaded
+        return null; // no file was uploaded
     }
     
-    // Checking if a file is an actual image
+    // img test
     function file_is_an_image($temporary_path, $new_path) {
         $allowed_mime_types = ['image/gif', 'image/jpeg', 'image/png'];
         $allowed_file_extensions = ['gif', 'jpg', 'jpeg', 'png'];

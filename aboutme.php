@@ -1,4 +1,6 @@
-<?php include 'authenticate.php'; ?>
+<?php
+require 'connection.php';
+?>
 
 <!DOCTYPE html>
 <html lang="en">

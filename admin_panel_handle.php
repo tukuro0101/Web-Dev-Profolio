@@ -62,12 +62,12 @@ $stmt->execute([$name, $category_id, $character, $price, $description, $imageURL
     }
 
     // Process the image file if uploaded
-    $imageFileName = handle_file_upload($id);
-    if ($imageFileName) {
-        $imageURL = 'figures_img/' . $imageFileName; // Assuming you want to store the relative path in the database
-        $stmt = $pdo->prepare("UPDATE Anime_Figures SET image_url = ? WHERE figure_id = ?");
-        $stmt->execute([$imageURL, $id]);
-    }
+        $imageFileName = handle_file_upload($id);
+        if ($imageFileName) {
+            $imageURL = 'figures_img/' . $imageFileName; // Assuming you want to store the relative path in the database
+            $stmt = $pdo->prepare("UPDATE Anime_Figures SET image_url = ? WHERE figure_id = ?");
+            $stmt->execute([$imageURL, $id]);
+        }
 
     if (isset($_POST['delete_product'])) {
         $id = $_POST['id'];
@@ -146,13 +146,12 @@ function resize_image($file, $target_file) {
     
         return true;
     }
-    
     function handle_file_upload($productId) {
         if (isset($_FILES['imageFile']) && $_FILES['imageFile']['error'] == UPLOAD_ERR_OK) {
             $targetDir = __DIR__ . '/figures_img/';
             $fileType = strtolower(pathinfo($_FILES['imageFile']['name'], PATHINFO_EXTENSION));
-            $resizedFileName = $productId . '.' . $fileType; 
-            $resizedFilePath = $targetDir . $resizedFileName;
+            $fileName = $productId . '.' . $fileType; // Concatenate product ID with file extension
+            $targetFilePath = $targetDir . $fileName;
     
             $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
             if (!in_array($fileType, $allowedTypes)) {
@@ -160,17 +159,27 @@ function resize_image($file, $target_file) {
                 return null;
             }
     
-            // Resize the image
-            if (resize_image($_FILES['imageFile']['tmp_name'], $resizedFilePath)) {
-                return $resizedFileName; // Return the new filename
+            // Check if the temporary file exists
+            if (!file_exists($_FILES['imageFile']['tmp_name'])) {
+                echo "Error: Temporary file does not exist.";
+                return null;
+            }
+    
+            // Move the uploaded file to the target directory with the generated file name
+            if (move_uploaded_file($_FILES['imageFile']['tmp_name'], $targetFilePath)) {
+                return $fileName; // Return the generated file name
             } else {
-                echo "Error resizing file.";
+                echo "Error moving file.";
                 return null;
             }
         }
     
-        return null; // no file was uploaded
+        return null; // No file was uploaded
     }
+    
+    
+    
+    
     
     // img test
     function file_is_an_image($temporary_path, $new_path) {

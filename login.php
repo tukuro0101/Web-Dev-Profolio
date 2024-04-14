@@ -1,6 +1,6 @@
 <?php
 include 'connection.php';
-
+session_start();
 // Check if a message is set (indicating a login attempt)
 if (isset($_SESSION['message'])) {
     $message = $_SESSION['message'];

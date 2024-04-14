@@ -1,6 +1,6 @@
 <?php
 require 'connection.php';
-
+session_start();
 // Fetch the 5 most recent products
 $stmt = $pdo->query("SELECT * FROM anime_figures ORDER BY date_added DESC LIMIT 8");
 $recent_products = $stmt->fetchAll();

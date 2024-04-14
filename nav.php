@@ -32,7 +32,8 @@ if (isset($results['error'])) {
         <a href="admin_panel.php">Admin Panel</a>
     <?php endif; ?>
     <?php if (isset($_SESSION['username'])): ?>
-        <a href="authenticate.php?logout">Logout</a>
+        <a href="login.php?logout">Logout</a>
+
     <?php else: ?>
         <a href="login.php">Login</a>
     <?php endif; ?>

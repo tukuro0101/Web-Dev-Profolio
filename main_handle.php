@@ -1,6 +1,6 @@
 <?php
 require 'connection.php';
-
+session_start();
 // Initialize variables
 $productsPerPage = 10;
 $page = isset($_GET['page']) ? max((int)$_GET['page'], 1) : 1;

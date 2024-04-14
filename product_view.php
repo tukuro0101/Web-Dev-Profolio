@@ -1,5 +1,5 @@
 <?php
-require 'connection.php';
+require 'connection.php';session_start();
 
 // Ensure an ID is provided
 if (!isset($_GET['id'])) {

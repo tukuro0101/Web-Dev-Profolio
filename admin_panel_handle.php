@@ -8,65 +8,94 @@ function getAllCategories($pdo) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Initial setup
-    $action = isset($_POST['insert_product']) ? 'insert' : (isset($_POST['update_product']) ? 'update' : '');
+    // Determine the action based on which button was pressed
+    if (isset($_POST['insert_product'])) {
+        $action = 'insert';
+    } elseif (isset($_POST['update_product'])) {
+        $action = 'update';
+    } elseif (isset($_POST['delete_product'])) {
+        $action = 'delete';
+    } else {
+        $action = '';
+    }
+
     $id = $_POST['id'] ?? null;
-    $name = $_POST['name'];
-    $category_id = $_POST['category_id'];
-    $character = $_POST['character'];
-    $price = $_POST['price'];
-    $description = $_POST['description'];
+    $name = $_POST['name'] ?? '';
+    $category_id = $_POST['category_id'] ?? null;
+    $character = $_POST['character'] ?? '';
+    $price = $_POST['price'] ?? 0.00;
+    $description = $_POST['description'] ?? '';
     $imageURL = '';  // Initialize as empty
 
-    if ($action === 'update') {
-        // First, fetch the current image URL to be able to retain it if no new image is provided
-        $currentImageStmt = $pdo->prepare("SELECT image_url FROM Anime_Figures WHERE figure_id = ?");
-        $currentImageStmt->execute([$id]);
-        $currentImageURL = $currentImageStmt->fetchColumn();
-
-        // Check if a new image URL is provided
-        if (!empty($_POST['imageUrlUpdate'])) {
-            $imageURL = $_POST['imageUrlUpdate'];
-        } elseif (isset($_FILES['imageFile']) && $_FILES['imageFile']['error'] === UPLOAD_ERR_OK) {
-            // Process new image upload
-            $uploadResult = handle_file_upload($name);  // Updated to use product name
-            if ($uploadResult !== null) {
-                $imageURL = 'figures_img/' . $uploadResult;
+    switch ($action) {
+        case 'insert':
+            // Handle image upload or URL input for new product
+            if (isset($_FILES['imageFile']) && $_FILES['imageFile']['error'] === UPLOAD_ERR_OK) {
+                $uploadResult = handle_file_upload($name);
+                if ($uploadResult !== null) {
+                    $imageURL = 'figures_img/' . $uploadResult;
+                }
+            } elseif (!empty($_POST['imageUrl'])) {
+                $imageURL = $_POST['imageUrl'];
             }
-        } elseif (isset($_POST['delete_image'])) {
-            // Delete the image if the checkbox is checked
-            $imageURL = null;
-            // Also delete the actual file
-            if ($currentImageURL) {
-                $filePath = __DIR__ . '/' . $currentImageURL;
+
+            // Insert product into the database
+            $stmt = $pdo->prepare("INSERT INTO Anime_Figures (name, category_id, `character`, price, description, image_url) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$name, $category_id, $character, $price, $description, $imageURL]);
+            break;
+
+        case 'update':
+            // Fetch current image URL
+            $currentImageStmt = $pdo->prepare("SELECT image_url FROM Anime_Figures WHERE figure_id = ?");
+            $currentImageStmt->execute([$id]);
+            $currentImageURL = $currentImageStmt->fetchColumn();
+
+            // Handle new image or image deletion
+            if (!empty($_POST['imageUrlUpdate'])) {
+                $imageURL = $_POST['imageUrlUpdate'];
+            } elseif (isset($_FILES['imageFile']) && $_FILES['imageFile']['error'] === UPLOAD_ERR_OK) {
+                $uploadResult = handle_file_upload($name);
+                if ($uploadResult !== null) {
+                    $imageURL = 'figures_img/' . $uploadResult;
+                }
+            } elseif (isset($_POST['delete_image'])) {
+                $imageURL = null;
+                if ($currentImageURL) {
+                    $filePath = __DIR__ . '/' . $currentImageURL;
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                }
+            } else {
+                $imageURL = $currentImageURL;
+            }
+
+            // Update product in the database
+            $stmt = $pdo->prepare("UPDATE Anime_Figures SET name = ?, category_id = ?, `character` = ?, price = ?, description = ?, image_url = ? WHERE figure_id = ?");
+            $stmt->execute([$name, $category_id, $character, $price, $description, $imageURL, $id]);
+            break;
+
+        case 'delete':
+            // Fetch current image URL for deletion
+            $imageQuery = $pdo->prepare("SELECT image_url FROM Anime_Figures WHERE figure_id = ?");
+            $imageQuery->execute([$id]);
+            $imageURL = $imageQuery->fetchColumn();
+
+            // Delete image file if it exists
+            if ($imageURL) {
+                $filePath = __DIR__ . '/' . $imageURL;
                 if (file_exists($filePath)) {
                     unlink($filePath);
                 }
             }
-        } else {
-            // If no new image is uploaded and delete is not checked, retain the current image
-            $imageURL = $currentImageURL;
-        }
-        
-        // Update the product details in the database
-        $stmt = $pdo->prepare("UPDATE Anime_Figures SET name = ?, category_id = ?, `character` = ?, price = ?, description = ?, image_url = ? WHERE figure_id = ?");
-        $stmt->execute([$name, $category_id, $character, $price, $description, $imageURL, $id]);
-    }
-    
-    // Insert operation remains unchanged
-    if ($action === 'insert') {
-        if (isset($_FILES['imageFile']) && $_FILES['imageFile']['error'] === UPLOAD_ERR_OK) {
-            $uploadResult = handle_file_upload($name);
-            if ($uploadResult !== null) {
-                $imageURL = 'figures_img/' . $uploadResult;
-            }
-        } elseif (!empty($_POST['imageUrl'])) {
-            $imageURL = $_POST['imageUrl'];
-        }
-        $stmt = $pdo->prepare("INSERT INTO Anime_Figures (name, category_id, `character`, price, description, image_url) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$name, $category_id, $character, $price, $description, $imageURL]);
+
+            // Delete the product from the database
+            $stmt = $pdo->prepare("DELETE FROM Anime_Figures WHERE figure_id = ?");
+            $stmt->execute([$id]);
+            break;
     }
 
-    header("Location: admin_panel.php"); // Redirect after processing
+    header("Location: admin_panel.php"); // Redirect to avoid form resubmission
     exit;
 }
+?>

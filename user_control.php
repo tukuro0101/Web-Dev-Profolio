@@ -8,8 +8,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $result = addUser($_POST['username'], $_POST['email'], $_POST['password'], $_POST['type'], $pdo);
         $_SESSION['message'] = $result ? "User added successfully!" : "Error adding user.";
     } elseif (isset($_POST['update_user'])) {
-        $result = updateUser($_POST['user_id'], $_POST['username'], $_POST['email'], $_POST['type'], $pdo);
-        $_SESSION['message'] = $result ? "User updated successfully!" : "Error updating user.";
+        $password = !empty($_POST['password']) ? $_POST['password'] : null;
+    $result = updateUser($_POST['user_id'], $_POST['username'], $_POST['email'], $_POST['type'], $password, $pdo);
+    $_SESSION['message'] = $result ? "User updated successfully!" : "Error updating user.";
     } elseif (isset($_POST['delete_user'])) {
         $result = deleteUser($_POST['user_id'], $pdo);
         $_SESSION['message'] = $result ? "User deleted successfully!" : "Error deleting user.";
@@ -26,11 +27,18 @@ function addUser($username, $email, $password, $type, $pdo) {
     return $stmt->rowCount();
 }
 
-function updateUser($userId, $username, $email, $type, $pdo) {
-    $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ?, type = ? WHERE user_id = ?");
-    $stmt->execute([$username, $email, $type, $userId]);
+function updateUser($userId, $username, $email, $type, $password, $pdo) {
+    if (!empty($password)) {
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ?, type = ?, password = ? WHERE user_id = ?");
+        $stmt->execute([$username, $email, $type, $hashedPassword, $userId]);
+    } else {
+        $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ?, type = ? WHERE user_id = ?");
+        $stmt->execute([$username, $email, $type, $userId]);
+    }
     return $stmt->rowCount();
 }
+
 
 function deleteUser($userId, $pdo) {
     $stmt = $pdo->prepare("DELETE FROM users WHERE user_id = ?");
@@ -76,13 +84,11 @@ $totalUsersStmt = $pdo->query("SELECT COUNT(*) FROM users");
 $totalUsers = $totalUsersStmt->fetchColumn();
 $totalUserPages = ceil($totalUsers / $usersPerPage);
 
-// Optional: display the user management HTML
-if (isset($displayUserManagement) && $displayUserManagement) {
+    
 ?>
 
 <section class="user-management">
     <h2>Manage Users</h2>
-
     <!-- Form for adding a new user -->
     <form action="user_control.php" method="post">
         <input type="text" name="username" placeholder="Username" required>
@@ -95,19 +101,20 @@ if (isset($displayUserManagement) && $displayUserManagement) {
         <button type="submit" name="add_user">Add User</button>
     </form>
 
-    <?php if ($userToEdit): // Display the edit form if a user is to be edited ?>
-    <form action="user_control.php" method="post">
-        <input type="hidden" name="user_id" value="<?= htmlspecialchars($userToEdit['user_id']) ?>">
-        <input type="text" name="username" value="<?= htmlspecialchars($userToEdit['username']) ?>" required>
-        <input type="email" name="email" value="<?= htmlspecialchars($userToEdit['email']) ?>" required>
-        <select name="type">
-            <option value="normal" <?= $userToEdit['type'] == 'normal' ? 'selected' : '' ?>>Normal</option>
-            <option value="admin" <?= $userToEdit['type'] == 'admin' ? 'selected' : '' ?>>Admin</option>
-        </select>
-        <button type="submit" name="update_user">Update User</button>
-    </form>
-    <?php endif; ?>
-
+    <!-- Password reset form section -->
+<?php if ($userToEdit): ?>
+<form action="user_control.php" method="post">
+    <input type="hidden" name="user_id" value="<?= htmlspecialchars($userToEdit['user_id']) ?>">
+    <input type="text" name="username" value="<?= htmlspecialchars($userToEdit['username']) ?>" required>
+    <input type="email" name="email" value="<?= htmlspecialchars($userToEdit['email']) ?>" required>
+    <input type="password" name="password" placeholder="Update a new password">
+    <select name="type">
+        <option value="normal" <?= $userToEdit['type'] === 'normal' ? 'selected' : '' ?>>Normal</option>
+        <option value="admin" <?= $userToEdit['type'] === 'admin' ? 'selected' : '' ?>>Admin</option>
+    </select>
+    <button type="submit" name="update_user">Update User</button>
+</form>
+<?php endif; ?>
     <!-- User list and actions -->
     <table>
         <thead>
@@ -123,7 +130,7 @@ if (isset($displayUserManagement) && $displayUserManagement) {
             <tr>
                 <td><?= htmlspecialchars($user['user_id']) ?></td>
                 <td><?= htmlspecialchars($user['username']) ?></td>
-                <td><?= htmlspecialchars($user['email']) ?></td>
+                <td><?= htmlspecialchars($user['email']) ?></td>        
                 <td>
                     <a href="?editUserId=<?= $user['user_id'] ?>&userPage=<?= $userPage ?>">Edit</a> |
                     <form action="user_control.php" method="post" onsubmit="return confirm('Are you sure you want to delete this user?');">
@@ -148,6 +155,3 @@ if (isset($displayUserManagement) && $displayUserManagement) {
     </nav>
 </section>
 
-<?php
-}
-?>

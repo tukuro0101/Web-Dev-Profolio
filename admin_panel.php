@@ -37,8 +37,6 @@ if (isset($_GET['edit_product_id'])) {
     $productToEdit = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-
-
 ?>
 
 <!DOCTYPE html>
@@ -185,9 +183,7 @@ if (isset($_GET['edit_product_id'])) {
                 </div>
             </section>
 
-            <?php $displayUserManagement = true; // Enable the display of user management
-include 'user_control.php';
-?>
+            <?php include 'user_control.php'; ?>
         </main>
         <footer><?php include 'contact.php'; ?></footer>
     </div>

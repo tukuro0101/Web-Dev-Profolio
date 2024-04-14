@@ -1,7 +1,7 @@
 <?php
 session_start();
 include 'connection.php';
-include 'img_upload.php'; // Include the image handling functions
+include 'img_upload.php';
 
 function getAllCategories($pdo) {
     return $pdo->query("SELECT category_id, name FROM categories ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);

@@ -12,28 +12,32 @@ $recent_products = $stmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recent Products</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
 </head>
 <body>
-    <div class="page_container">
+<div class="container">
         <header><?php include 'nav.php'; ?></header>
-        
         <main>
-            <section class="recent-products">
-                <h2>Recent Products</h2>
-                <div class="product-slide-container">
-                    <div class="product-slide-wrapper">
-                        <?php foreach ($recent_products as $product): ?>
-                            <div class="product-card">
-                                <h3><?= htmlspecialchars($product['name']) ?></h3>
-                                <img src="<?= htmlspecialchars($product['image_url']) ?>" alt="Product Image" width="100%" height="200">
-                                <p>Description: <?= htmlspecialchars($product['description']) ?></p>
-                                <p>Price: $<?= htmlspecialchars(number_format($product['price'], 2)) ?></p>
+        <section class="mt-4 mb-4">
+            <h2>Recent Products</h2>
+            <div class="product-slide-container mt-3">
+                <div class="d-flex overflow-hidden position-relative product_container">
+                    <?php foreach ($recent_products as $product): ?>
+                        <div class="card me-3" style="width: 18rem;">
+                            <img class="card-img-top" src="<?= htmlspecialchars($product['image_url']) ?>" alt="Product Image" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                <a href="product_view.php?id=<?= $product['figure_id'] ?>"><?= htmlspecialchars($product['name']) ?></a></h5>
+                                <p class="card-text">Description: <?= htmlspecialchars(substr($product['description'], 0, 200)) . (strlen($product['description']) > 200 ? "..." : "") ?></p>
+                                <p class="card-text"><strong>Price:</strong> $<?= htmlspecialchars(number_format($product['price'], 2)) ?></p>
                             </div>
-                        <?php endforeach; ?>
-                    </div>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
-            </section>
-        </main>
+            </div>
+        </section>
+    </main>
         <footer><?php include 'contact.php'; ?></footer>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -45,19 +49,19 @@ $recent_products = $stmt->fetchAll();
 
             function showSlides() {
                 var i;
-                var slides = $('.product-card');
+                var slides = $('.card');
                 for (i = 0; i < slides.length; i++) {
                     slides[i].style.display = "none";  
                 }
                 slideIndex++;
                 if (slideIndex > slides.length) {slideIndex = 1}    
                 slides[slideIndex-1].style.display = "block";  
-                slideTimer = setTimeout(showSlides, 1000); // Change slide every 3 seconds
+                slideTimer = setTimeout(showSlides, 3000); // Change slide every 3 seconds
             }
 
             showSlides();
 
-            $('.product-slide-wrapper').on('mouseenter', function() {
+            $('.product-slide-container').on('mouseenter', function() {
                 clearTimeout(slideTimer);
             }).on('mouseleave', function() {
                 showSlides();
@@ -70,7 +74,11 @@ $recent_products = $stmt->fetchAll();
             position: relative;
             overflow: hidden;
             width: 100%;
-            height: 400px; /* Adjust height as needed */
+            height: 800px; /* Adjust height as needed */
+        }
+        .product_container{
+            display: flex;
+            justify-content: center;
         }
 
         .product-slide-wrapper {

@@ -81,9 +81,11 @@
                         <h5>Character : <?= htmlspecialchars($product['character']) ?></h5>
                         <h5>Added : <?= htmlspecialchars($product['date_added']) ?></h5>
                         <!-- Make the product image clickable -->
-                        <a href="product_view.php?id=<?= $product['figure_id'] ?>">
-                            <img src="<?= htmlspecialchars($product['image_url']) ?>" alt="Image of <?= htmlspecialchars($product['name']) ?>" width="300" height="300">
-                        </a>
+                        <?php if (!empty($product['image_url'])): ?>
+                <a href="product_view.php?id=<?= $product['figure_id'] ?>">
+                    <img src="<?= htmlspecialchars($product['image_url']) ?>" alt="Image of <?= htmlspecialchars($product['name']) ?>" width="300" height="300">
+                </a>
+            <?php endif; ?>
                         <h1><b><a href="product_view.php?id=<?= $product['figure_id'] ?>"><?= htmlspecialchars($product['name']) ?></a></b></h1>
                         <!-- Edit Link for admins -->
                         <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin'): ?>

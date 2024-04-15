@@ -128,6 +128,58 @@
         document.getElementById('categorySelect').addEventListener('change', function() {
             document.getElementById('categoryForm').submit();
         });
+
+        // Function to load content without refreshing the page
+function loadContent(url) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.onload = function() {
+        if (this.status === 200) {
+            // Update the product listing section
+            const response = document.createElement('div');
+            response.innerHTML = this.responseText;
+
+            // Replace the old content with the new one
+            const oldSection = document.querySelector('.product-listing');
+            const newSection = response.querySelector('.product-listing');
+            oldSection.parentNode.replaceChild(newSection, oldSection);
+
+            // Update pagination links
+            const oldPagination = document.querySelector('.pagination');
+            const newPagination = response.querySelector('.pagination');
+            oldPagination.parentNode.replaceChild(newPagination, oldPagination);
+
+            // Re-bind events to new pagination links
+            bindPaginationEvents();
+        } else {
+            console.error('Failed to load the page content');
+        }
+    };
+    xhr.send();
+}
+
+// Bind events to pagination links
+function bindPaginationEvents() {
+    document.querySelectorAll('.pagination a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            loadContent(this.href);
+        });
+    });
+}
+
+// Initial bind
+bindPaginationEvents();
+
+// Bind event to sort and category change without page refresh
+document.querySelectorAll('#sortForm select, #categoryForm select').forEach(select => {
+    select.addEventListener('change', function() {
+        const form = this.closest('form');
+        const url = form.action + '?' + new URLSearchParams(new FormData(form)).toString();
+        loadContent(url);
+    });
+});
+
     </script>
 </body>
 </html>

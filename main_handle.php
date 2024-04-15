@@ -109,4 +109,16 @@ if ($totalPages > 0 && $page > $totalPages) {
     header("Location: {$_SERVER['PHP_SELF']}?page={$totalPages}");
     exit;
 }
+
+function isAjaxRequest() {
+    return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
+}
+
+// Example usage in your main_handle.php
+if (isAjaxRequest()) {
+    // Output only the necessary parts
+    include 'product_listing_section.php';  // Assume this file outputs only the products list
+    exit;
+}
+
 ?>

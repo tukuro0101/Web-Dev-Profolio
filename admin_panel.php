@@ -52,6 +52,9 @@ if (isset($_GET['edit_product_id'])) {
         <header><?php include 'nav.php'; ?></header>
         <main>
         <h1>Admin Panel</h1>
+        <div class="product_control">
+
+
             <section class="product-management">
                 <h2>Insert New Product</h2>
                 <form action="admin_panel_handle.php" method="post" enctype="multipart/form-data">
@@ -87,7 +90,6 @@ if (isset($_GET['edit_product_id'])) {
                 <section class="update-delete-product">
                     <h2>Update Product</h2>
                     <div>
-                        <h3>Current Image:</h3>
                         <?php if ($productToEdit['image_url']): ?>
                             <img src="<?= htmlspecialchars($productToEdit['image_url']) ?>" alt="Current Image" class="product-image">
                         <?php else: ?>
@@ -105,7 +107,7 @@ if (isset($_GET['edit_product_id'])) {
                             <?php endforeach; ?>
                         </select>
                         <input type="text" name="character" placeholder="Character" required value="<?= htmlspecialchars($productToEdit['character']) ?>">
-                        <input type="number" step="0.01" name="price" placeholder="Price" required value="<?= htmlspecialchars($productToEdit['price']) ?>">
+                        <input style="margin:5px 0;" type="number" step="0.01" name="price" placeholder="Price" required value="<?= htmlspecialchars($productToEdit['price']) ?>">
                         <textarea name="description" placeholder="Description" required><?= htmlspecialchars($productToEdit['description']) ?></textarea>
                         <!-- Image upload or URL input -->
                         <div id="imageUploadOptionsUpdate">
@@ -116,11 +118,8 @@ if (isset($_GET['edit_product_id'])) {
                             <label for="imageUrlUpdate">Image URL:</label>
                             <input type="text" name="imageUrlUpdate" id="imageUrlUpdate">
                         </div>
+                        <button type="button" id="toggleImageInputUpdate" style="margin:5px 0;">Toggle Image Input</button>
 
-                        <!-- Button for toggling between upload and URL input -->
-                        <button type="button" id="toggleImageInputUpdate">Toggle Image Input</button>
-
-                         <!-- Select button to remove image -->
                          <?php if ($productToEdit['image_url']): ?>
                             <input type="checkbox" name="delete_image" id="delete_image">
                             <label for="delete_image">Delete Image</label>
@@ -131,6 +130,7 @@ if (isset($_GET['edit_product_id'])) {
                         <button type="submit" name="delete_product">Delete Product</button>
                     </form>
                 </section>
+                </div>
             <?php endif; ?>
             <section class="category-management">
                 <h2>Manage Categories</h2>
@@ -162,12 +162,15 @@ if (isset($_GET['edit_product_id'])) {
                     </form>
                 <?php endif; ?>
             </section>
-
+            <h2>Products</h2>
             <section class="product-display">
-                <h2>Products</h2>
+            
                 <?php foreach ($products as $product): ?>
                     <div class="product">
-                        <h3><?= htmlspecialchars($product['name']) ?></h3>
+                    <h3>  <?php
+            if (strlen($product['name']) > 15) { echo htmlspecialchars(substr($product['name'], 0, 15)) . '...';} 
+            else { echo htmlspecialchars($product['name']);} ?>
+        </h3>
                         <?php if ($product['image_url']): ?>
                             <img src="<?= htmlspecialchars($product['image_url']) ?>" alt="Product Image" class="product-image" width="100px" height="100px">
                         <?php else: ?>
@@ -176,13 +179,12 @@ if (isset($_GET['edit_product_id'])) {
                         <a href="?edit_product_id=<?= $product['figure_id'] ?>">Edit</a>
                     </div>
                 <?php endforeach; ?>
-                <!-- Pagination -->
-                <div class="pagination">
+            </section>
+                            <div class="pagination">
                     <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                        <a href="?page=<?= $i ?>"><?= $i ?></a>
+                        <a style="margin:0 5px; font-size:40px" href="?page=<?= $i ?>"><?= $i ?></a>
                     <?php endfor; ?>
                 </div>
-            </section>
 
             <?php include 'user_control.php'; ?>
         </main>
@@ -191,16 +193,17 @@ if (isset($_GET['edit_product_id'])) {
 
     <script>
    document.addEventListener("DOMContentLoaded", function() {
-    // Get references to the image upload and URL input elements for insert new product form
     var imageUploadOptionsInsert = document.getElementById("imageUploadOptionsInsert");
     var imageUrlInputInsert = document.getElementById("imageUrlInputInsert");
 
-    // Get reference to the toggle button for insert new product form
+    imageUploadOptionsInsert.style.display = "block"; 
+    imageUrlInputInsert.style.display = "none"; 
+
     var toggleImageInputButtonInsert = document.getElementById("toggleImageInputInsert");
 
-    // Add click event listener to the toggle button for insert new product form
+
     toggleImageInputButtonInsert.addEventListener("click", function() {
-        // Toggle display property of image upload and URL input elements for insert new product form
+
         if (imageUploadOptionsInsert.style.display === "none") {
             imageUploadOptionsInsert.style.display = "block";
             imageUrlInputInsert.style.display = "none";
@@ -210,16 +213,13 @@ if (isset($_GET['edit_product_id'])) {
         }
     });
 
-    // Get references to the image upload and URL input elements for update/edit product form
     var imageUploadOptionsUpdate = document.getElementById("imageUploadOptionsUpdate");
     var imageUrlInputUpdate = document.getElementById("imageUrlInputUpdate");
 
-    // Get reference to the toggle button for update/edit product form
     var toggleImageInputButtonUpdate = document.getElementById("toggleImageInputUpdate");
 
-    // Add click event listener to the toggle button for update/edit product form
     toggleImageInputButtonUpdate.addEventListener("click", function() {
-        // Toggle display property of image upload and URL input elements for update/edit product form
+
         if (imageUploadOptionsUpdate.style.display === "none") {
             imageUploadOptionsUpdate.style.display = "block";
             imageUrlInputUpdate.style.display = "none";
@@ -268,6 +268,88 @@ document.addEventListener("DOMContentLoaded", function() {
 
 });
 
+function loadProducts(url) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.onload = function() {
+        if (this.status === 200) {
+            const response = document.createElement('div');
+            response.innerHTML = this.responseText;
+
+            const oldProductDisplay = document.querySelector('.product-display');
+            const newProductDisplay = response.querySelector('.product-display');
+            oldProductDisplay.parentNode.replaceChild(newProductDisplay, oldProductDisplay);
+
+            bindPaginationEvents(); // Rebind events to new pagination links
+        } else {
+            console.error('Failed to load products');
+        }
+    };
+    xhr.send();
+}
+
+function bindPaginationEvents() {
+    document.querySelectorAll('.pagination a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            loadProducts(this.href);
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    bindPaginationEvents(); 
+});
+
+function updateProduct(formData) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'admin_panel_handle.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+    xhr.onload = function() {
+        if (this.status === 200) {
+            console.log('Product updated successfully');
+            loadProducts(window.location.href); // Reload the current page section
+        } else {
+            console.error('Error updating product');
+        }
+    };
+
+    xhr.send(formData);
+}
+
+document.querySelectorAll('.update-delete-product form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        updateProduct(new URLSearchParams(formData).toString());
+    });
+});
+
 </script>
 </body>
+
+<style>
+    body{background: rgb(70,70,70);
+background: linear-gradient(90deg, rgba(70,70,70,1) 0%, rgba(25,25,25,1) 20%, rgba(71,71,71,1) 40%, rgba(0,0,0,1) 60%, rgba(38,38,45,1) 80%, rgba(14,21,23,1) 100%);}
+.container{background: whitesmoke;}
+.product-management>form , .update-delete-product>form{display: flex;
+    flex-direction: column;
+    width: 75%;
+    min-width: 300px;
+    margin: 20px 0;}
+    .product_control{display: flex;    border: 1px solid;}
+    .product-display{display: flex;
+    border: 1px solid;
+    padding: 35px 10px;
+    margin: 30px 0;}
+    .product{max-width: 250px !important;
+    margin: 10px;
+    border: 1px solid black;
+    padding: 5px;}
+    .product-management>form>button{width: 70%;}  
+    p,input,select,td,a,button,label,textarea,th{font-size: 25px;}
+    input,select,td,a,button,label,textarea,th{margin: 15px 0;}
+    div#imageUploadOptionsInsert,div#imageUrlInputInsert{height: 150px;}
+</style>
 </html>

@@ -17,9 +17,10 @@
         <!-- Main Content -->
         <main style="display: flex;">
             <!-- Sidebar -->
-            <aside class="category-sidebar">
+            <div class="col-md-3 ">
+                <aside class="category-sidebar">
                 <h2>Categories</h2>
-                <form id="categoryForm" action="" method="get">
+                <form id="categoryForm" action="" method="get"  class="mb-3">
                     <select name="category" id="categorySelect" onchange="this.form.submit();">
                         <option value="">All Categories</option>
                         <?php foreach ($categories as $category): ?>
@@ -36,9 +37,8 @@
                         <input type="hidden" name="searchQuery" value="<?= htmlspecialchars($_GET['searchQuery']) ?>">
                     <?php endif; ?>
                 </form>
-            </aside>
 
-            <!-- Sort Form -->
+                            <!-- Sort Form -->
             <form id="sortForm" action="" method="get">
                 <select name="sort" id="sortSelect" onchange="this.form.submit();">
                     <option value="price_asc" <?= (isset($_GET['sort']) && $_GET['sort'] == 'price_asc') ? 'selected' : '' ?>>Price Low to High</option>
@@ -66,6 +66,9 @@
         <input type="hidden" name="prevProductCount" value="<?= $productsPerPage ?>">
     </form>
 <?php endif; ?>
+                </aside>
+            </div>
+
 <div class="search-info">
     <?php if (isset($_GET['searchQuery'])): ?>
         <?php $searchTerm = htmlspecialchars($_GET['searchQuery']); ?>
@@ -74,23 +77,21 @@
 </div>
 
             <!-- Product Listing Section -->
-            <section class="product-listing">
+            <section class="product-listing ">
                 <?php foreach ($products as $product): ?>
-                    <div class="product">
-                        <h2><b><?= htmlspecialchars($product['name']) ?></b></h2>
-                        <h1>$<?= htmlspecialchars($product['price']) ?></h1>
+                    <div class="product" >
+                    <h1><b><a style="font-size: 30px; color:black;" href="product_view.php?id=<?= $product['figure_id'] ?>"><?= htmlspecialchars($product['name']) ?> </a></b></h1>
                         <h5>Character : <?= htmlspecialchars($product['character']) ?></h5>
-                        <h5>Added : <?= htmlspecialchars($product['date_added']) ?></h5>
+                        <h5>Added: <?= htmlspecialchars(date('F d,Y',strtotime($product['date_added']))) ?></h5>
                         <!-- Make the product image clickable -->
                         <?php if (!empty($product['image_url'])): ?>
                 <a href="product_view.php?id=<?= $product['figure_id'] ?>">
                     <img src="<?= htmlspecialchars($product['image_url']) ?>" alt="Image of <?= htmlspecialchars($product['name']) ?>" width="300" height="300">
                 </a>
             <?php endif; ?>
-                        <h1><b><a href="product_view.php?id=<?= $product['figure_id'] ?>"><?= htmlspecialchars($product['name']) ?></a></b></h1>
-                        <!-- Edit Link for admins -->
+            <h1>$<?= htmlspecialchars($product['price']) ?></h1>
                         <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin'): ?>
-    <a href="admin_panel.php?edit_product_id=<?= $product['figure_id'] ?>">Edit</a>
+    <a style="font-size:20px;" href="admin_panel.php?edit_product_id=<?= $product['figure_id'] ?>">Edit</a>
 <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
@@ -105,7 +106,7 @@
             <?php endif; ?>
 
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <a href="?page=<?= $i ?>&productCount=<?= $productsPerPage ?>&<?php if ($categoryFilter) echo 'category=' . urlencode($categoryFilter) ?>&<?php if ($sortOption) echo 'sort=' . $sortOption ?>&<?php if ($searchQuery) echo 'searchQuery=' . urlencode($searchQuery) ?>" <?= ($page == $i) ? 'class="active"' : '' ?>><?= $i ?></a>
+                <a style="margin:0 5px;" href="?page=<?= $i ?>&productCount=<?= $productsPerPage ?>&<?php if ($categoryFilter) echo 'category=' . urlencode($categoryFilter) ?>&<?php if ($sortOption) echo 'sort=' . $sortOption ?>&<?php if ($searchQuery) echo 'searchQuery=' . urlencode($searchQuery) ?>" <?= ($page == $i) ? 'class="active"' : '' ?>><?= $i ?></a>
             <?php endfor; ?>
 
             <?php if ($page < $totalPages): ?>
@@ -185,4 +186,30 @@ document.querySelectorAll('#sortForm select, #categoryForm select').forEach(sele
 
     </script>
 </body>
+
+<style>
+    body{background: rgb(70,70,70);
+background: linear-gradient(90deg, rgba(70,70,70,1) 0%, rgba(25,25,25,1) 20%, rgba(71,71,71,1) 40%, rgba(0,0,0,1) 60%, rgba(38,38,45,1) 80%, rgba(14,21,23,1) 100%);}
+.container{background: whitesmoke;}
+
+.category-sidebar{position: fixed;
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    justify-content: space-between;
+    height: 300px;
+}
+.product{display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 5px solid;
+    margin: 30px 0px;
+    width: 650px;
+}
+.pagination{margin: 5px;
+    font-size: 40px;
+    font-weight: bolder;}
+    .pagination>a.active{color: black ;}
+</style>
 </html>
+

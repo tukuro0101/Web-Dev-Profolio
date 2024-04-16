@@ -9,16 +9,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
-<?php
-// Error handling
-if (isset($results['error'])) {
-    echo '<div class="error-message">' . $results['error'] . '</div>';
-}
-?>
-<div class="navbar">
-    <div class="nav_Title_container">
+    <div class="nav_container">
+         <div class="Title_container">
        <h1> Kuro Aniz CMS</h1>
     </div>
+<div class="navbar">
     <div class="nav_search_container">
         <form action="main.php" method="GET" id="searchForm">
         <input type="text" placeholder="Search.." name="searchQuery" id="searchInput" autocomplete="off" required value="<?php echo isset($_GET['searchQuery']) ? htmlspecialchars($_GET['searchQuery']) : ''; ?>">
@@ -38,6 +33,8 @@ if (isset($results['error'])) {
     <?php else: ?>
         <a href="login.php">Login</a>
     <?php endif; ?>
+</div>
+
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -73,13 +70,18 @@ document.addEventListener('DOMContentLoaded', function() {
 <style>
 
 
-.navbar {
+.nav_container {
     overflow: hidden;
-    background-color: #333;
+    background-image: linear-gradient(to right bottom, #3f3f3f, #343434, #292929, #1f1f1f, #151515, #151515, #161616, #161616, #212121, #2d2d2d, #393939, #464646);
     font-family: Arial, sans-serif;
     position: sticky;
     padding: 10px;
+    margin-bottom: 25px;
+    border-radius: 30px;
 }
+.Title_container{ font-size: xxx-large;
+    text-align: center;
+    color: whitesmoke;}
 
 .navbar a {
     float: right;
@@ -145,4 +147,5 @@ border-bottom: 1px solid #d4d4d4;
 .autocomplete-items div:hover {
 background-color: #e9e9e9; 
 }
+a{text-decoration: none !important}
     </style>

@@ -3,7 +3,7 @@
 
 <style>
         .footer {
-            background-color: #333; /* Assuming this matches the nav color */
+            background-image: linear-gradient(to right bottom, #3f3f3f, #343434, #292929, #1f1f1f, #151515, #151515, #161616, #161616, #212121, #2d2d2d, #393939, #464646); 
             color: white;
             padding: 20px 0;
             font-family: Arial, sans-serif;

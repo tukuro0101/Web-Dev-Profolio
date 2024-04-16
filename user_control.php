@@ -132,7 +132,8 @@ $totalUserPages = ceil($totalUsers / $usersPerPage);
                 <td><?= htmlspecialchars($user['username']) ?></td>
                 <td><?= htmlspecialchars($user['email']) ?></td>        
                 <td>
-                    <a href="?editUserId=<?= $user['user_id'] ?>&userPage=<?= $userPage ?>">Edit</a> |
+                <a href="#" onclick="loadUsers('?editUserId=<?= $user['user_id'] ?>&userPage=<?= $userPage ?>'); return false;">Edit</a>
+
                     <form action="user_control.php" method="post" onsubmit="return confirm('Are you sure you want to delete this user?');">
                         <input type="hidden" name="user_id" value="<?= $user['user_id']; ?>">
                         <input type="hidden" name="delete_user" value="1">
@@ -148,10 +149,76 @@ $totalUserPages = ceil($totalUsers / $usersPerPage);
         <ul class="pagination">
             <?php for ($i = 1; $i <= $totalUserPages; $i++): ?>
                 <li class="<?= $i == $userPage ? 'active' : ''; ?>">
-                    <a href="?userPage=<?= $i ?>"><?= $i ?></a>
+                    <a style="margin:0 5px; font-size:40px" href="?userPage=<?= $i ?>"><?= $i ?></a>
                 </li>
             <?php endfor; ?>
         </ul>
     </nav>
 </section>
+
+<script>
+    function handleUserAction(formData, actionUrl) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', actionUrl, true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+    xhr.onload = function() {
+        if (this.status === 200) {
+            console.log('User operation successful');
+            loadUsers(window.location.href.split('?')[0] + '?userPage=' + getCurrentPage()); // Reload the current page section
+        } else {
+            console.error('Error during user operation');
+        }
+    };
+
+    xhr.send(formData);
+}
+
+function loadUsers(url) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.onload = function() {
+        if (this.status === 200) {
+            const response = document.createElement('div');
+            response.innerHTML = this.responseText;
+
+            const oldUserManagement = document.querySelector('.user-management');
+            const newUserManagement = response.querySelector('.user-management');
+            oldUserManagement.parentNode.replaceChild(newUserManagement, oldUserManagement);
+
+            bindUserManagementEvents(); // Rebind events to new user management content
+        } else {
+            console.error('Failed to load user management');
+        }
+    };
+    xhr.send();
+}
+
+function getCurrentPage() {
+    const activePage = document.querySelector('.pagination .active a');
+    return activePage ? activePage.textContent : 1;
+}
+
+function bindUserManagementEvents() {
+    document.querySelectorAll('.user-management form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new URLSearchParams(new FormData(form)).toString();
+            handleUserAction(formData, form.action);
+        });
+    });
+
+    document.querySelectorAll('.pagination a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            loadUsers(this.href);
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    bindUserManagementEvents(); // Initial binding
+});
+
+</script>
 

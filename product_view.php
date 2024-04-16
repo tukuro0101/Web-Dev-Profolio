@@ -191,6 +191,25 @@ if (isset($_POST['submit_review'])) {
     section.product-details{   
         display: flex;
     flex-direction: column;
-    align-items: center;}
+    align-items: center;
+    border: 10px solid black;
+    padding: 30px 150px;
+    font-size: 20px;
+    margin: 20px;
+}
+section.comment-form {
+    margin: 40px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.comment-form>form>button,.comment-form>form>select{width: 30%;margin: 20px 0;}
+
+section.comment-form>form>label,select,.review>p,.review>strong {font-size: 25px;}
+section.comment-form>form   {display: flex;
+    flex-direction: column;}
+    body{background: rgb(70,70,70);
+background: linear-gradient(90deg, rgba(70,70,70,1) 0%, rgba(25,25,25,1) 20%, rgba(71,71,71,1) 40%, rgba(0,0,0,1) 60%, rgba(38,38,45,1) 80%, rgba(14,21,23,1) 100%);}
+.container{background: whitesmoke;}
 </style>
 </html>

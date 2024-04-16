@@ -17,8 +17,7 @@
     <div class="nav_search_container">
         <form action="main.php" method="GET" id="searchForm">
         <input type="text" placeholder="Search.." name="searchQuery" id="searchInput" autocomplete="off" required value="<?php echo isset($_GET['searchQuery']) ? htmlspecialchars($_GET['searchQuery']) : ''; ?>">
-            <div id="autocompleteList" class="autocomplete-items"></div>
-            <button type="submit">Search</button>
+            <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
         </form>
     </div>
     <a href="index.php">Home</a>
@@ -85,16 +84,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .navbar a {
     float: right;
-    font-size: 16px;
     color: white;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
+    font-size: 30px;
 }
 
 .navbar a:hover {
-    background-color: #ddd;
-    color: black;
+    opacity: 0.8;
+    background-color: #3f3f3f;
 }
 
 /* Style the search box */
@@ -106,46 +105,24 @@ document.addEventListener('DOMContentLoaded', function() {
 .nav_search_container input[type=text] {
     padding: 6px;
     margin-top: 8px;
-    font-size: 17px;
+    font-size: 20px;
     border: none;
+    border-radius: 20px;
 }
 
-.nav_search_containernav_search_container button {
+.nav_search_containernav_search_container > button {
     float: right;
-    padding: 6px 10px;
+    padding: 6px 5px;
     margin-top: 8px;
     margin-right: 16px;
     background: #ddd;
-    font-size: 17px;
-    border: none;
+    font-size: 20px;
+    border-radius: 40px !important;
     cursor: pointer;
 }
 
 .nav_search_container button:hover {
     background: #ccc;
 } 
-.autocomplete-items {
-position: absolute;
-border: 1px solid #d4d4d4;
-border-bottom: none;
-border-top: none;
-z-index: 99;
-/*position the autocomplete items to be the same width as the container:*/
-top: 100%;
-left: 0;
-right: 0;
-}
-
-.autocomplete-items div {
-padding: 10px;
-cursor: pointer;
-background-color: #fff; 
-border-bottom: 1px solid #d4d4d4; 
-}
-
-/*when hovering an item:*/
-.autocomplete-items div:hover {
-background-color: #e9e9e9; 
-}
 a{text-decoration: none !important}
     </style>

@@ -148,7 +148,7 @@ $totalUserPages = ceil($totalUsers / $usersPerPage);
         <ul class="pagination">
             <?php for ($i = 1; $i <= $totalUserPages; $i++): ?>
                 <li class="<?= $i == $userPage ? 'active' : ''; ?>">
-                    <a style="font-size:20px; margin: 5px 0" href="?userPage=<?= $i ?>"><?= $i ?></a>
+                    <a style="font-size:20px; margin: 10px" href="?userPage=<?= $i ?>"><?= $i ?></a>
                 </li>
             <?php endfor; ?>
         </ul>

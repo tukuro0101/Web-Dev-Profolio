@@ -15,7 +15,7 @@
         <header><?php include 'nav.php'; ?></header>
         
         <!-- Main Content -->
-        <main style="display: flex;">
+        <main style="display: flex; min-height:100vh;">
             <!-- Sidebar -->
             <div class="col-md-3 ">
                 <aside class="category-sidebar">

@@ -22,7 +22,6 @@
     </div>
     <a href="index.php">Home</a>
     <a href="main.php">Products</a>
-    <a href="aboutme.php">About me</a>
     <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin'): ?>
         <a href="admin_panel.php">Admin Panel</a>
     <?php endif; ?>

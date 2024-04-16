@@ -6,14 +6,11 @@ require 'connection.php'; // Ensure this is the path to your database connection
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (isset($_POST['add_user'])) {
         $result = addUser($_POST['username'], $_POST['email'], $_POST['password'], $_POST['type'], $pdo);
-        $_SESSION['message'] = $result ? "User added successfully!" : "Error adding user.";
     } elseif (isset($_POST['update_user'])) {
         $password = !empty($_POST['password']) ? $_POST['password'] : null;
     $result = updateUser($_POST['user_id'], $_POST['username'], $_POST['email'], $_POST['type'], $password, $pdo);
-    $_SESSION['message'] = $result ? "User updated successfully!" : "Error updating user.";
     } elseif (isset($_POST['delete_user'])) {
         $result = deleteUser($_POST['user_id'], $pdo);
-        $_SESSION['message'] = $result ? "User deleted successfully!" : "Error deleting user.";
     }
     header("Location: admin_panel.php");
     exit;
@@ -151,7 +148,7 @@ $totalUserPages = ceil($totalUsers / $usersPerPage);
         <ul class="pagination">
             <?php for ($i = 1; $i <= $totalUserPages; $i++): ?>
                 <li class="<?= $i == $userPage ? 'active' : ''; ?>">
-                    <a  href="?userPage=<?= $i ?>"><?= $i ?></a>
+                    <a style="font-size:20px; margin: 5px 0" href="?userPage=<?= $i ?>"><?= $i ?></a>
                 </li>
             <?php endfor; ?>
         </ul>

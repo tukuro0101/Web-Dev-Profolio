@@ -1,6 +1,8 @@
 <?php
+ob_start(); 
 include 'connection.php';
 session_start();
+
 // Check if a message is set (indicating a login attempt)
 if (isset($_SESSION['message'])) {
     $message = $_SESSION['message'];
@@ -119,13 +121,27 @@ if (isset($_POST['login'])) {
         exit;
     }
 }
+if (isset($_SESSION['logged_out'])) {
+    $message = $_SESSION['logged_out'];
+    echo "<div class='message'>$message</div>";
+    unset($_SESSION['logged_out']);
+}
+
 
 // Logout
 if (isset($_GET['logout'])) {
+    // Set the logged out message to display after redirection
+    $_SESSION['logged_out'] = 'You have successfully logged out.';
+    
     session_unset();
     session_destroy();
-    header("Location: index.php");
+    
+        header("Location: login.php?logged_out=1");
     exit();
+}
+if (isset($_SESSION['logged_out'])) {
+    $logout_message = $_SESSION['logged_out'];
+    unset($_SESSION['logged_out']);
 }
 ?>
 
@@ -218,3 +234,4 @@ background: linear-gradient(90deg, rgba(70,70,70,1) 0%, rgba(25,25,25,1) 20%, rg
 .container{background: whitesmoke;}
 </style>
 </html>
+<?php ob_end_flush(); ?>

@@ -88,7 +88,9 @@ if (isset($_POST['submit_review'])) {
         <main>
             <section class="product-details">
                 <h1><?= htmlspecialchars($product['name']) ?></h1>
-                <img src="<?= htmlspecialchars($product['image_url']) ?>" alt="Product Image" width="300" height="300">
+                <?php if (!empty($product['image_url'])): ?>
+                    <img src="<?= htmlspecialchars($product['image_url']) ?>" alt="Product Image" width="300" height="300">
+            <?php endif; ?>
                 <p>Category: <?= htmlspecialchars($categoryName) ?></p>
                 <p>Character: <?= htmlspecialchars($product['character']) ?></p>
                 <p>Description: <?= htmlspecialchars($product['description']) ?></p>
@@ -185,5 +187,9 @@ if (isset($_POST['submit_review'])) {
     #toggleReviews {
         display: none; 
     }
+    section.product-details{   
+        display: flex;
+    flex-direction: column;
+    align-items: center;}
 </style>
 </html>

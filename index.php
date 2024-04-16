@@ -25,7 +25,12 @@ $recent_products = $stmt->fetchAll();
                 <div class="d-flex overflow-hidden position-relative product_container">
                     <?php foreach ($recent_products as $product): ?>
                         <div class="card me-3" style="width: 18rem;">
+                        <?php if (!empty($product['image_url'])): ?>
                             <img class="card-img-top" src="<?= htmlspecialchars($product['image_url']) ?>" alt="Product Image" style="height: 200px; object-fit: cover;">
+                        <?php else:  ?>
+                            <div class="card-img-top" style="height: 200px; width:100%; text-align:center;font-size:40px;">Image to be updated</div>
+                        <?php endif; ?>
+                           
                             <div class="card-body">
                                 <h5 class="card-title">
                                 <a href="product_view.php?id=<?= $product['figure_id'] ?>"><?= htmlspecialchars($product['name']) ?></a></h5>
@@ -69,12 +74,11 @@ $recent_products = $stmt->fetchAll();
         });
     </script>
     <style>
-        /* Add your CSS styles for product display here */
         .product-slide-container {
             position: relative;
             overflow: hidden;
             width: 100%;
-            height: 800px; /* Adjust height as needed */
+            height: 600px; 
         }
         .product_container{
             display: flex;

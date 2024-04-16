@@ -26,15 +26,17 @@ function addUser($username, $email, $password, $type, $pdo) {
     $stmt->execute([$username, $email, $hashedPassword, $type]);
     return $stmt->rowCount();
 }
-
 function updateUser($userId, $username, $email, $type, $password, $pdo) {
-    if (!empty($password)) {
+    error_log("Attempting to update user ID: $userId");  // Log the user ID being updated
+    if ($password !== null) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ?, type = ?, password = ? WHERE user_id = ?");
-        $stmt->execute([$username, $email, $type, $hashedPassword, $userId]);
     } else {
         $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ?, type = ? WHERE user_id = ?");
-        $stmt->execute([$username, $email, $type, $userId]);
+    }
+    $execResult = $stmt->execute($password !== null ? [$username, $email, $type, $hashedPassword, $userId] : [$username, $email, $type, $userId]);
+    if (!$execResult) {
+        error_log("Update failed with error: " . implode(", ", $stmt->errorInfo()));  // Log SQL errors
     }
     return $stmt->rowCount();
 }
@@ -149,7 +151,7 @@ $totalUserPages = ceil($totalUsers / $usersPerPage);
         <ul class="pagination">
             <?php for ($i = 1; $i <= $totalUserPages; $i++): ?>
                 <li class="<?= $i == $userPage ? 'active' : ''; ?>">
-                    <a style="margin:0 5px; font-size:40px" href="?userPage=<?= $i ?>"><?= $i ?></a>
+                    <a  href="?userPage=<?= $i ?>"><?= $i ?></a>
                 </li>
             <?php endfor; ?>
         </ul>
@@ -186,7 +188,7 @@ function loadUsers(url) {
             const newUserManagement = response.querySelector('.user-management');
             oldUserManagement.parentNode.replaceChild(newUserManagement, oldUserManagement);
 
-            bindUserManagementEvents(); // Rebind events to new user management content
+            bindUserManagementEvents(); // Rebind events to new user management content 
         } else {
             console.error('Failed to load user management');
         }
@@ -198,27 +200,6 @@ function getCurrentPage() {
     const activePage = document.querySelector('.pagination .active a');
     return activePage ? activePage.textContent : 1;
 }
-
-function bindUserManagementEvents() {
-    document.querySelectorAll('.user-management form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new URLSearchParams(new FormData(form)).toString();
-            handleUserAction(formData, form.action);
-        });
-    });
-
-    document.querySelectorAll('.pagination a').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            loadUsers(this.href);
-        });
-    });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    bindUserManagementEvents(); // Initial binding
-});
 
 </script>
 

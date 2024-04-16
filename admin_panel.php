@@ -12,7 +12,7 @@ $page = max($page, 1); // Ensure the page is at least 1
 $offset = ($page - 1) * $productsPerPage;
 
 // Prepare the SQL query to fetch products with a limit and offset
-$stmt = $pdo->prepare("SELECT * FROM Anime_Figures ORDER BY figure_id ASC LIMIT :offset, :productsPerPage");
+$stmt = $pdo->prepare("SELECT * FROM anime_figures ORDER BY figure_id ASC LIMIT :offset, :productsPerPage");
 $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
 $stmt->bindParam(':productsPerPage', $productsPerPage, PDO::PARAM_INT);
 $stmt->execute();
